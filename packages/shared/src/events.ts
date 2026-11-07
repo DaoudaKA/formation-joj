@@ -29,9 +29,12 @@ export const createEventSchema = z.object({
   disciplineId: z.uuid(),
   name: z.string().trim().min(1).max(EVENT_NAME_MAX_LENGTH),
   site: eventSiteSchema,
-  startsAt: z.iso.datetime({ offset: true }).refine((value) => isDuringGames(new Date(value)), {
-    message: `The event must start between ${GAMES_PERIOD.start} and ${GAMES_PERIOD.end}`,
-  }),
+  // `abort` : une date mal formée ne donne qu'une erreur, pas aussi celle de la période.
+  startsAt: z.iso
+    .datetime({ offset: true, abort: true })
+    .refine((value) => isDuringGames(new Date(value)), {
+      message: `The event must start between ${GAMES_PERIOD.start} and ${GAMES_PERIOD.end}`,
+    }),
 });
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 
