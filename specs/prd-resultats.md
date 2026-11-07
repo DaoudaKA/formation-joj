@@ -1,6 +1,6 @@
 # PRD — Résultats des épreuves
 
-**Statut** : Brouillon
+**Statut** : Validé
 
 ## Problème
 
