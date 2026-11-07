@@ -35,3 +35,11 @@ export function eventStatusTransitionInvalid(from: string, to: string): EventErr
     { from, to },
   );
 }
+
+export function eventNotFound(id: string): EventError {
+  return new EventError('EVENT_NOT_FOUND', `No event with id ${id}`, { id });
+}
+
+export function eventDisciplineNotFound(id: string): EventError {
+  return new EventError('EVENT_DISCIPLINE_NOT_FOUND', `No discipline with id ${id}`, { id });
+}
