@@ -1,4 +1,5 @@
-import { VolunteerError } from './volunteers.errors';
+import { Registration } from './registration';
+import { slotFull, VolunteerError } from './volunteers.errors';
 
 export interface SlotProps {
   id: string;
@@ -8,6 +9,13 @@ export interface SlotProps {
   capacity: number;
   registeredCount: number;
   createdAt: Date;
+}
+
+export interface NewVolunteer {
+  id: string;
+  name: string;
+  email: string;
+  now: Date;
 }
 
 export interface NewSlot {
@@ -21,7 +29,7 @@ export interface NewSlot {
 
 /** Un créneau d'accueil d'une discipline : des horaires cohérents et un nombre de places. */
 export class Slot {
-  private constructor(private readonly props: SlotProps) {}
+  private constructor(private props: SlotProps) {}
 
   /** Le domaine revérifie capacité et horaires : il ne fait pas confiance à la validation HTTP. */
   static create({ id, disciplineId, startsAt, endsAt, capacity, now }: NewSlot): Slot {
@@ -75,5 +83,18 @@ export class Slot {
 
   get createdAt(): Date {
     return this.props.createdAt;
+  }
+
+  /**
+   * Inscrit un bénévole s'il reste une place. La persistance revérifie la place de façon
+   * atomique : deux inscriptions simultanées ne peuvent pas prendre la même.
+   */
+  register({ id, name, email, now }: NewVolunteer): Registration {
+    if (this.props.registeredCount >= this.props.capacity) {
+      throw slotFull(this.props.id);
+    }
+    const registration = Registration.create({ id, slotId: this.props.id, name, email, now });
+    this.props = { ...this.props, registeredCount: this.props.registeredCount + 1 };
+    return registration;
   }
 }

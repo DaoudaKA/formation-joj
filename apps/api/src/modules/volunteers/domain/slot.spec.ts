@@ -45,4 +45,32 @@ describe('Slot', () => {
       expect.objectContaining({ code: 'SLOT_TIME_RANGE_INVALID', kind: 'VALIDATION' }),
     );
   });
+
+  const volunteer = (n: number) => ({
+    id: `0199f5c2-0000-7000-8000-00000000020${n}`,
+    name: `Bénévole ${n}`,
+    email: `benevole${n}@example.sn`,
+    now: NOW,
+  });
+
+  it('001-AS5: registers a volunteer on a slot with a free place', () => {
+    const slot = open();
+    const registration = slot.register(volunteer(1));
+    expect(registration).toMatchObject({
+      slotId: ID,
+      name: 'Bénévole 1',
+      email: 'benevole1@example.sn',
+    });
+    expect(slot.registeredCount).toBe(1);
+  });
+
+  it('001-AS7: rejects a registration on a full slot', () => {
+    const slot = open();
+    slot.register(volunteer(1));
+    slot.register(volunteer(2));
+    expect(() => slot.register(volunteer(3))).toThrow(
+      expect.objectContaining({ code: 'SLOT_FULL', kind: 'CONFLICT' }),
+    );
+    expect(slot.registeredCount).toBe(2);
+  });
 });
