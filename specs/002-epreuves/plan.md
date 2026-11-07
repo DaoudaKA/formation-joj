@@ -100,3 +100,9 @@ Six au plus, dans l'ordre des couches. Chaque tâche nomme le test à écrire d'
 - [x] T03 [002-AS5, AS6, AS10] Écrire d'abord `application/events.application.spec.ts` (« 002-AS5: refuses an event for an unknown discipline »), puis le port `EventRepository`, sa version en mémoire, `CreateEvent` et `ChangeEventStatus`
 - [x] T04 [002-AS1, AS6] Écrire d'abord `infra/drizzle-event.repository.int.spec.ts` (« 002-AS6: persists the status change of an event »), puis `infra/events.schema.ts`, la migration, `infra/event.mapper.ts` et `DrizzleEventRepository`
 - [x] T05 [002-AS1, AS2, AS3, AS4, AS5, AS6, AS7, AS8, AS9, AS10] Écrire d'abord `apps/api/test/events.e2e.spec.ts` (« 002-AS7: refuses to skip a status (422, EVENT_STATUS_TRANSITION_INVALID) »), puis `http/events.controller.ts`, `events.module.ts` et son ajout dans `app.module.ts`
+
+## 7. Corrections
+
+### Passage 1
+
+- [ ] T06 [002-AS5] Écrire d'abord un test e2e dans `apps/api/test/disciplines.e2e.spec.ts` (« 002-AS5: refuses to delete a discipline that has events (409, DISCIPLINE_HAS_EVENTS) ») et un test du cas d'usage `DeleteDiscipline`, puis faire refuser la suppression d'une discipline qui a des épreuves par une `AppError` CONFLICT (`DISCIPLINE_HAS_EVENTS`), avec la vérification dans le cas d'usage (un port qui sait si la discipline a des épreuves) et la clé étrangère `events.discipline_id` comme garantie en base. Preuve (relecteur) : `apps/api/src/modules/events/infra/events.schema.ts:12-14` crée la clé étrangère en `ON DELETE no action`, mais `apps/api/src/modules/disciplines/infra/drizzle-discipline.repository.ts:60-66` supprime sans gérer cette contrainte. Supprimer une discipline qui a une épreuve lève l'erreur Postgres `23503`, que `problem-details.filter.ts:78` transforme en `500 INTERNAL_ERROR`.
