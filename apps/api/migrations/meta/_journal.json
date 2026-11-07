@@ -15,6 +15,13 @@
       "when": 1794062849184,
       "tag": "0001_create-slots-and-registrations",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794069073494,
+      "tag": "0002_create-events",
+      "breakpoints": true
     }
   ]
 }
