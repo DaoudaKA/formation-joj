@@ -27,3 +27,11 @@ export class EventError extends AppError<EventErrorCode> {
     super(code, EVENT_ERROR_KINDS[code], message, details);
   }
 }
+
+export function eventStatusTransitionInvalid(from: string, to: string): EventError {
+  return new EventError(
+    'EVENT_STATUS_TRANSITION_INVALID',
+    `An event status moves forward one step at a time: ${from} cannot become ${to}`,
+    { from, to },
+  );
+}

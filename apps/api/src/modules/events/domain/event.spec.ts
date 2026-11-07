@@ -64,4 +64,53 @@ describe('Event', () => {
       expect(create({ startsAt: new Date(startsAt) }).startsAt).toEqual(new Date(startsAt));
     },
   );
+
+  const restoreWith = (status: 'scheduled' | 'in-progress' | 'finished') =>
+    Event.restore({
+      id: ID,
+      disciplineId: DISCIPLINE_ID,
+      name: 'Lutte -60 kg garçons',
+      site: 'diamniadio',
+      startsAt: STARTS_AT,
+      status,
+      createdAt: NOW,
+    });
+
+  it('002-AS6: moves a scheduled event to in progress, then to finished', () => {
+    const event = create();
+    event.changeStatus('in-progress');
+    expect(event.status).toBe('in-progress');
+    event.changeStatus('finished');
+    expect(event.status).toBe('finished');
+  });
+
+  it('002-AS7: refuses to skip a status and keeps the event scheduled', () => {
+    const event = create();
+    expect(() => event.changeStatus('finished')).toThrow(
+      expect.objectContaining({ code: 'EVENT_STATUS_TRANSITION_INVALID', kind: 'BUSINESS_RULE' }),
+    );
+    expect(event.status).toBe('scheduled');
+  });
+
+  it.each([
+    ['finished', 'in-progress'],
+    ['finished', 'scheduled'],
+    ['in-progress', 'scheduled'],
+    ['finished', 'finished'],
+    ['in-progress', 'in-progress'],
+  ] as const)('002-AS8: refuses to move a %s event back or in place to %s', (from, to) => {
+    const event = restoreWith(from);
+    expect(() => event.changeStatus(to)).toThrow(
+      expect.objectContaining({ code: 'EVENT_STATUS_TRANSITION_INVALID', kind: 'BUSINESS_RULE' }),
+    );
+    expect(event.status).toBe(from);
+  });
+
+  it('002-AS9: refuses an unknown status and keeps the event scheduled', () => {
+    const event = create();
+    expect(() => event.changeStatus('annulée')).toThrow(
+      expect.objectContaining({ code: 'EVENT_STATUS_UNKNOWN', kind: 'VALIDATION' }),
+    );
+    expect(event.status).toBe('scheduled');
+  });
 });

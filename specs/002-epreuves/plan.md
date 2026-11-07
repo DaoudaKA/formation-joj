@@ -96,7 +96,7 @@ Chaque scénario de la spec est prouvé par au moins un test, au niveau le plus 
 Six au plus, dans l'ordre des couches. Chaque tâche nomme le test à écrire d'abord et cite les scénarios qu'elle couvre ; elle tient dans un commit.
 
 - [x] T01 [002-AS1, AS2, AS3, AS4] Écrire d'abord `domain/event.spec.ts` (« 002-AS1: creates a scheduled event with its trimmed name, discipline, site and date »), puis les constantes et schémas de `packages/shared/src/events.ts`, `domain/events.errors.ts` et `Event.create()`
-- [ ] T02 [002-AS6, AS7, AS8, AS9] Écrire d'abord la suite de `domain/event.spec.ts` (« 002-AS7: refuses to skip a status and keeps the event scheduled »), puis `event.changeStatus()`
+- [x] T02 [002-AS6, AS7, AS8, AS9] Écrire d'abord la suite de `domain/event.spec.ts` (« 002-AS7: refuses to skip a status and keeps the event scheduled »), puis `event.changeStatus()`
 - [ ] T03 [002-AS5, AS6, AS10] Écrire d'abord `application/events.application.spec.ts` (« 002-AS5: refuses an event for an unknown discipline »), puis le port `EventRepository`, sa version en mémoire, `CreateEvent` et `ChangeEventStatus`
 - [ ] T04 [002-AS1, AS6] Écrire d'abord `infra/drizzle-event.repository.int.spec.ts` (« 002-AS6: persists the status change of an event »), puis `infra/events.schema.ts`, la migration, `infra/event.mapper.ts` et `DrizzleEventRepository`
 - [ ] T05 [002-AS1, AS2, AS3, AS4, AS5, AS6, AS7, AS8, AS9, AS10] Écrire d'abord `apps/api/test/events.e2e.spec.ts` (« 002-AS7: refuses to skip a status (422, EVENT_STATUS_TRANSITION_INVALID) »), puis `http/events.controller.ts`, `events.module.ts` et son ajout dans `app.module.ts`

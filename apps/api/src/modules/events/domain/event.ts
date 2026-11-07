@@ -1,12 +1,13 @@
 import {
   EVENT_NAME_MAX_LENGTH,
   EVENT_SITES,
+  EVENT_STATUSES,
   GAMES_PERIOD,
   isDuringGames,
   type EventSite,
   type EventStatus,
 } from '@joj/shared';
-import { EventError } from './events.errors';
+import { EventError, eventStatusTransitionInvalid } from './events.errors';
 
 export interface EventProps {
   id: string;
@@ -77,6 +78,19 @@ export class Event {
   get createdAt(): Date {
     return this.props.createdAt;
   }
+
+  /**
+   * N'accepte que le statut qui suit immédiatement le statut actuel : ni retour en arrière,
+   * ni surplace, ni étape sautée. En cas de refus, rien n'est modifié.
+   */
+  changeStatus(status: string): void {
+    const target = validStatus(status);
+    const next = EVENT_STATUSES[EVENT_STATUSES.indexOf(this.props.status) + 1];
+    if (target !== next) {
+      throw eventStatusTransitionInvalid(this.props.status, target);
+    }
+    this.props = { ...this.props, status: target };
+  }
 }
 
 function validName(name: string): string {
@@ -111,4 +125,14 @@ function validStartsAt(startsAt: Date): Date {
     );
   }
   return startsAt;
+}
+
+function validStatus(status: string): EventStatus {
+  if (!(EVENT_STATUSES as readonly string[]).includes(status)) {
+    throw new EventError('EVENT_STATUS_UNKNOWN', `Unknown status ${status}`, {
+      status,
+      allowed: EVENT_STATUSES,
+    });
+  }
+  return status as EventStatus;
 }
